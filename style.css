@@ -1,0 +1,567 @@
+/* ==========================================================================
+   VARIABEL WARNA PADA :root
+   Silakan ubah kode hex warna di bawah ini untuk mengganti tema website
+   ========================================================================== */
+:root {
+    --primary-color: #0056b3;        /* GANTI: [BIRU_PRIMARY] */
+    --secondary-color: #28a745;      /* GANTI: [HIJAU_SECONDARY] */
+    --accent-color: #111111;         /* GANTI: [HITAM_AKSEN] */
+    --bg-main: #ffffff;              /* GANTI: [PUTIH_BACKGROUND] */
+    --bg-card: #fffde7;              /* GANTI: [KUNING_CARD] (Kuning lembut agar teks nyaman dibaca) */
+    --text-main: #222222;            /* GANTI: [HITAM_TEKS_UTAMA] */
+    --text-muted: #fbc02d;           /* GANTI: [KUNING_TEKS_SEKUNDER] */
+    
+    /* Konfigurasi UI Tambahan */
+    --bg-light: #f8f9fa;
+    --border-radius: 8px;
+    --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    --transition: all 0.3s ease;
+}
+
+/* ==========================================================================
+   RESET & DASAR HALAMAN
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    color: var(--text-main);
+    background-color: var(--bg-main);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+.container {
+    width: 100%;
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.section-spacing {
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+.section-title {
+    font-size: 2.2rem;
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.section-subtitle {
+    font-size: 1.1rem;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto 30px auto;
+    color: #555;
+}
+
+/* ==========================================================================
+   STYLE NAVIGASI BAR (NAVBAR)
+   ========================================================================== */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--bg-main);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    z-index: 1000;
+    padding: 15px 0;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-logo {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    text-decoration: none;
+    letter-spacing: 1px;
+}
+
+.nav-menu {
+    display: flex;
+    list-style: none;
+}
+
+.nav-link {
+    color: var(--text-main);
+    text-decoration: none;
+    padding: 8px 16px;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.nav-link:hover {
+    color: var(--primary-color);
+}
+
+/* Tombol hamburger khusus seluler */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+}
+
+.menu-toggle .bar {
+    width: 25px;
+    height: 3px;
+    background-color: var(--accent-color);
+    margin: 4px 0;
+    transition: var(--transition);
+}
+
+/* ==========================================================================
+   STYLE TOMBOL (BUTTONS)
+   ========================================================================== */
+.btn {
+    display: inline-block;
+    padding: 10px 24px;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition);
+    cursor: pointer;
+    border: none;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    color: #ffffff;
+}
+
+.btn-secondary:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+.btn-large {
+    padding: 15px 35px;
+    font-size: 1.1rem;
+}
+
+/* ==========================================================================
+   1. HERO SECTION
+   ========================================================================== */
+.hero-section {
+    padding: 130px 0 70px 0;
+    background-color: var(--bg-light);
+}
+
+.hero-container {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+.hero-content {
+    flex: 1;
+}
+
+.badge {
+    background-color: var(--text-muted);
+    color: var(--accent-color);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+.hero-content h1 {
+    font-size: 3rem;
+    color: var(--primary-color);
+    line-height: 1.2;
+    margin-bottom: 12px;
+}
+
+.tagline {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 20px;
+}
+
+.description {
+    font-size: 1rem;
+    color: #444;
+    margin-bottom: 30px;
+    text-align: justify;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.hero-image {
+    flex: 1;
+    text-align: center;
+}
+
+.img-responsive {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--border-radius);
+}
+
+.image-cover {
+    width: 100%;
+    object-fit: cover;
+}
+
+/* ==========================================================================
+   2. MASALAH SECTION & GRID CARD UTAMA
+   ========================================================================== */
+.masalah-section {
+    padding: 70px 0;
+}
+
+.main-problem-statement {
+    background-color: #fff3cd;
+    border-left: 5px solid #ffc107;
+    padding: 20px;
+    margin: 25px 0;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.card {
+    background-color: var(--bg-card);
+    border-radius: var(--border-radius);
+    padding: 30px;
+    box-shadow: var(--box-shadow);
+    transition: var(--transition);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+.masalah-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #dc3545;
+    margin-bottom: 10px;
+}
+
+/* ==========================================================================
+   3. SOLUSI SECTION
+   ========================================================================== */
+.solusi-section {
+    padding: 70px 0;
+    background-color: var(--bg-light);
+}
+
+.solusi-heading {
+    text-align: center;
+    font-size: 1.4rem;
+    margin-bottom: 40px;
+    color: var(--accent-color);
+}
+
+.solusi-intro-grid {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+}
+
+.solusi-points {
+    flex: 1.2;
+}
+
+.solusi-item {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+}
+
+.solusi-item .number {
+    background-color: var(--primary-color);
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.solusi-image-box {
+    flex: 0.8;
+}
+
+.solusi-image-box img {
+    border-radius: var(--border-radius);
+    max-height: 300px;
+}
+
+.solusi-details {
+    background-color: var(--bg-main);
+    padding: 35px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+.cara-kerja h3, .manfaat-box h3 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+.cara-kerja p {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed #eee;
+}
+
+.manfaat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.manfaat-card {
+    background: #e2f0d9;
+    padding: 15px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    border-left: 4px solid var(--secondary-color);
+}
+
+.main-screenshot {
+    max-width: 650px;
+    margin: 20px auto;
+    border: 4px solid #ddd;
+}
+
+/* ==========================================================================
+   4. FITUR SECTION
+   ========================================================================== */
+.fitur-section {
+    padding: 70px 0;
+}
+
+.card-fitur {
+    border-top: 4px solid var(--primary-color);
+    background-color: var(--bg-main);
+}
+
+.fitur-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+
+.card-fitur h3 {
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+    color: var(--accent-color);
+}
+
+/* ==========================================================================
+   5. AKSES PRODUK SECTION
+   ========================================================================== */
+.akses-section {
+    padding: 90px 0;
+    background-color: var(--bg-card);
+}
+
+.akses-box {
+    background-color: var(--bg-main);
+    padding: 40px;
+    border-radius: var(--border-radius);
+    max-width: 750px;
+    margin: 0 auto;
+    box-shadow: var(--box-shadow);
+}
+
+.akses-box p {
+    font-size: 1.15rem;
+    margin-bottom: 30px;
+}
+
+.akses-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   6. TIM SECTION
+   ========================================================================== */
+.tim-section {
+    padding: 70px 0;
+}
+
+.tim-desc {
+    font-style: italic;
+    color: #555;
+    margin-bottom: 40px;
+    text-align: justify;
+}
+
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 30px;
+}
+
+.team-card {
+    text-align: center;
+    background-color: var(--bg-light);
+}
+
+.team-img-wrapper {
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 20px auto;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid var(--primary-color);
+}
+
+.team-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.team-card h4 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    color: var(--accent-color);
+}
+
+.team-card .role {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   7. FOOTER SECTION
+   ========================================================================== */
+.main-footer {
+    background-color: var(--accent-color);
+    color: #ffffff;
+    padding: 50px 0;
+}
+
+.footer-class {
+    color: var(--text-muted);
+    font-weight: bold;
+    margin: 5px 0 15px 0;
+}
+
+.footer-divider {
+    border: 0;
+    height: 1px;
+    background: #333;
+    max-width: 400px;
+    margin: 20px auto;
+}
+
+.footer-tagline {
+    font-size: 0.9rem;
+    color: #999;
+}
+
+/* ==========================================================================
+   INTERAKSI & ANIMASI JAVASCRIPT
+   ========================================================================== */
+.section-animate {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.section-animate.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN (MEDIA QUERIES)
+   ========================================================================== */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: flex;
+    }
+
+    .nav-menu {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        position: absolute;
+        top: 65px;
+        left: 0;
+        background-color: var(--bg-main);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        padding: 20px 0;
+    }
+
+    .nav-menu.active {
+        display: flex;
+    }
+
+    .nav-menu li {
+        text-align: center;
+        margin: 12px 0;
+    }
+
+    .hero-container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .hero-content h1 {
+        font-size: 2.3rem;
+    }
+
+    .hero-buttons {
+        justify-content: center;
+    }
+
+    .solusi-intro-grid {
+        flex-direction: column;
+    }
+}

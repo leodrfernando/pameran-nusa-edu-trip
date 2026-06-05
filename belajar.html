@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Pembelajaran - Mini LMS Kebudayaan</title>
+    <style>
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #2b6cb0;
+            --accent-color: #319795;
+            --bg-light: #f7fafc;
+            --bg-card: #ffffff;
+            --text-dark: #2d3748;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            --active-bg: #ebf8ff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Top Navigation Navbar */
+        .lms-navbar {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .lms-logo {
+            font-size: 1.2rem;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: 1px solid white;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* Layout Utama Container */
+        .lms-layout {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
+        /* SIDEBAR (NAVIGASI KIRI) */
+        .lms-sidebar {
+            width: 320px;
+            background-color: var(--bg-card);
+            border-right: 1px solid var(--border-color);
+            height: calc(100vh - 54px);
+            position: sticky;
+            top: 54px;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 15px 20px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+            letter-spacing: 0.5px;
+        }
+
+        .accordion-item {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .accordion-trigger {
+            width: 100%;
+            padding: 15px 20px;
+            background-color: #f8fafc;
+            border: none;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .accordion-trigger:hover {
+            background-color: #edf2f7;
+        }
+
+        .accordion-icon {
+            font-size: 0.8rem;
+            transition: transform 0.2s;
+        }
+
+        .subbab-list {
+            list-style: none;
+            display: none; /* Tersembunyi secara bawaan */
+            background-color: #ffffff;
+        }
+
+        /* Status Aktif Modul Menu */
+        .accordion-item.open .subbab-list {
+            display: block;
+        }
+
+        .accordion-item.open .accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        .subbab-item {
+            padding: 10px 20px 10px 35px;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .subbab-item:hover {
+            background-color: var(--bg-light);
+            color: var(--secondary-color);
+        }
+
+        .subbab-item.active {
+            background-color: var(--active-bg);
+            color: var(--secondary-color);
+            font-weight: bold;
+            border-left-color: var(--secondary-color);
+        }
+
+        .game-menu-item {
+            padding: 15px 20px;
+            background-color: #e6fffa;
+            color: #234e52;
+            font-weight: bold;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* AREA KONTEN (KANAN) */
+        .lms-content-area {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .content-container {
+            max-width: 850px;
+            margin: 0 auto;
+            background-color: var(--bg-card);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        /* Panel Setiap Subbab */
+        .materi-panel {
+            display: none; /* Tersembunyi bawaan */
+        }
+
+        .materi-panel.active-panel {
+            display: block; /* Hanya tampilkan panel aktif */
+        }
+
+        /* Tipografi Elemen Pembelajaran */
+        .materi-panel h1 {
+            font-size: 1.85rem;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .materi-panel h2 {
+            font-size: 1.25rem;
+            color: var(--accent-color);
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+
+        .materi-panel h3 {
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            margin: 25px 0 12px 0;
+        }
+
+        .materi-panel p {
+            line-height: 1.7;
+            margin-bottom: 16px;
+            text-align: justify;
+        }
+
+        .materi-panel ul, .materi-panel ol {
+            margin-left: 20px;
+            margin-bottom: 16px;
+        }
+
+        .materi-panel li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        /* Ringkasan Placeholder Box */
+        .summary-box {
+            background-color: #f7fafc;
+            border-left: 4px solid var(--secondary-color);
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            font-style: italic;
+        }
+
+        /* Responsivitas Media Video */
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            max-width: 100%;
+            background: #000;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        /* Tombol Link Eksternal */
+        .btn-lms {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            margin: 10px 0;
+            transition: background 0.2s;
+        }
+
+        .btn-lms:hover {
+            background-color: var(--primary-color);
+        }
+
+        /* MEDIA QUERIES (MOBILE RESPONSIVE) */
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .lms-layout {
+                flex-direction: column;
+            }
+
+            .lms-sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 400px;
+                position: static;
+                display: none; /* Sembunyikan default di mobile */
+            }
+
+            .lms-sidebar.show-mobile {
+                display: block;
+            }
+
+            .lms-content-area {
+                padding: 15px;
+            }
+
+            .content-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="lms-navbar">
+        <div class="lms-logo">NusaEdu LMS</div>
+        <button class="mobile-menu-btn" onclick="toggleSidebar()">☰ Daftar Bab</button>
+    </nav>
+
+    <div class="lms-layout">
+
+        <aside class="lms-sidebar" id="lmsSidebar">
+            <div class="sidebar-header">Daftar Modul</div>
+
+            <div class="accordion-item open">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">Bab 1: DKI Jakarta <span class="accordion-icon">▼</span></button>
+                <ul class="subbab-list">
+                    <li class="subbab-item active" onclick="switchPanel('bab1-1', this)">1.1 Letak Geografis</li>
+                    <li class="subbab-item" onclick="switchPanel('bab1-2', this)">1.2 Wisata Edukasi & Budaya</li>
+                    <li class="subbab-item" onclick="switchPanel('bab1-3', this)">1.3 Lagu Daerah & Musik</li>
+                    <li class="subbab-item" onclick="switchPanel('bab1-4', this)">1.4 Materi Visual</li>
+                    <li class="subbab-item" onclick="switchPanel('bab1-5', this)">1.5 Video Pembelajaran</li>
+                    <li class="subbab-item" onclick="switchPanel('bab1-6', this)">1.6 Quiz Pembelajaran</li>
+                </ul>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">Bab 2: Banten <span class="accordion-icon">▼</span></button>
+                <ul class="subbab-list">
+                    <li class="subbab-item" onclick="switchPanel('bab2-1', this)">2.1 Letak Geografis</li>
+                    <li class="subbab-item" onclick="switchPanel('bab2-2', this)">2.2 Wisata Daerah & Edukasi</li>
+                    <li class="subbab-item" onclick="switchPanel('bab2-3', this)">2.3 Lagu Daerah & Musik</li>
+                    <li class="subbab-item" onclick="switchPanel('bab2-4', this)">2.4 Materi Visual</li>
+                    <li class="subbab-item" onclick="switchPanel('bab2-5', this)">2.5 Video Pembelajaran</li>
+                    <li class="subbab-item" onclick="switchPanel('bab2-6', this)">2.6 Quiz Pembelajaran</li>
+                </ul>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">Bab 3: DI Yogyakarta <span class="accordion-icon">▼</span></button>
+                <ul class="subbab-list">
+                    <li class="subbab-item" onclick="switchPanel('bab3-1', this)">3.1 Letak Geografis</li>
+                    <li class="subbab-item" onclick="switchPanel('bab3-2', this)">3.2 Wisata Daerah & Edukasi</li>
+                    <li class="subbab-item" onclick="switchPanel('bab3-3', this)">3.3 Lagu Daerah & Sastra</li>
+                    <li class="subbab-item" onclick="switchPanel('bab3-4', this)">3.4 Materi Visual</li>
+                    <li class="subbab-item" onclick="switchPanel('bab3-5', this)">3.5 Video Pembelajaran</li>
+                    <li class="subbab-item" onclick="switchPanel('bab3-6', this)">3.6 Quiz Pembelajaran</li>
+                </ul>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">Bab 4: Jawa Tengah <span class="accordion-icon">▼</span></button>
+                <ul class="subbab-list">
+                    <li class="subbab-item" onclick="switchPanel('bab4-1', this)">4.1 Letak Geografis</li>
+                    <li class="subbab-item" onclick="switchPanel('bab4-2', this)">4.2 Wisata Daerah & Edukasi</li>
+                    <li class="subbab-item" onclick="switchPanel('bab4-3', this)">4.3 Lagu Daerah & Satir</li>
+                    <li class="subbab-item" onclick="switchPanel('bab4-4', this)">4.4 Materi Visual</li>
+                    <li class="subbab-item" onclick="switchPanel('bab4-5', this)">4.5 Video Pembelajaran</li>
+                    <li class="subbab-item" onclick="switchPanel('bab4-6', this)">4.6 Quiz Pembelajaran</li>
+                </ul>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">Bab 5: Jawa Barat <span class="accordion-icon">▼</span></button>
+                <ul class="subbab-list">
+                    <li class="subbab-item" onclick="switchPanel('bab5-1', this)">5.1 Letak Geografis</li>
+                    <li class="subbab-item" onclick="switchPanel('bab5-2', this)">5.2 Wisata Edukasi & Sains</li>
+                    <li class="subbab-item" onclick="switchPanel('bab5-3', this)">5.3 Lagu Daerah & Nada</li>
+                    <li class="subbab-item" onclick="switchPanel('bab5-4', this)">5.4 Materi Visual</li>
+                    <li class="subbab-item" onclick="switchPanel('bab5-5', this)">5.5 Video Pembelajaran</li>
+                    <li class="subbab-item" onclick="switchPanel('bab5-6', this)">5.6 Quiz Pembelajaran</li>
+                </ul>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">Bab 6: Jawa Timur <span class="accordion-icon">▼</span></button>
+                <ul class="subbab-list">
+                    <li class="subbab-item" onclick="switchPanel('bab6-1', this)">6.1 Letak Geografis</li>
+                    <li class="subbab-item" onclick="switchPanel('bab6-2', this)">6.2 Wisata Edukasi & Geologi</li>
+                    <li class="subbab-item" onclick="switchPanel('bab6-3', this)">6.3 Lagu Daerah & Karakter</li>
+                    <li class="subbab-item" onclick="switchPanel('bab6-4', this)">6.4 Materi Visual</li>
+                    <li class="subbab-item" onclick="switchPanel('bab6-5', this)">6.5 Video Pembelajaran</li>
+                    <li class="subbab-item" onclick="switchPanel('bab6-6', this)">6.6 Quiz Pembelajaran</li>
+                </ul>
+            </div>
+
+            <div class="game-menu-item" onclick="switchPanel('lms-game', this)">🕹️ Game Interaktif</div>
+        </aside>
+
+        <main class="lms-content-area">
+            <div class="content-container">
+
+                <div id="bab1-1" class="materi-panel active-panel">
+                    <h1>Bab 1: DKI Jakarta</h1>
+                    <h2>1.1 Letak Geografis</h2>
+                    <div class="summary-box">
+                        <strong>Ringkasan bab 1:</strong> Bab 1 membahas tentang keragaman di DKI jakarta materi tambahan canva ,quiz dan juga video pembelajaran
+                    </div>
+                    <h3>Koordinat Astronomis</h3>
+                    <p>Terletak di antara 6° Lintang Selatan (LS) dan 106° Bujur Timur (BT).</p>
+                    <h3>Kondisi Fisik</h3>
+                    <p>Menempati pesisir barat laut Pulau Jawa di kawasan dataran rendah dengan ketinggian rata-rata 8 meter di atas permukaan laut (mdpl). Dataran rendah ini dialiri oleh 13 sungai utama (termasuk Sungai Ciliwung, Cisadane, dan Sunter) yang bermuara ke Teluk Jakarta.</p>
+                    <h3>Batas Wilayah Administrasi</h3>
+                    <ul>
+                        <li><strong>Utara:</strong> Laut Jawa (Teluk Jakarta)</li>
+                        <li><strong>Timur:</strong> Kabupaten Bekasi dan Kota Bekasi (Provinsi Jawa Barat)</li>
+                        <li><strong>Selatan:</strong> Kota Depok dan Kota Bogor (Provinsi Jawa Barat)</li>
+                        <li><strong>Barat:</strong> Kota Tangerang dan Kabupaten Tangerang (Provinsi Banten)</li>
+                    </ul>
+                </div>
+
+                <div id="bab1-2" class="materi-panel">
+                    <h1>Bab 1: DKI Jakarta</h1>
+                    <h2>1.2 Wisata Edukasi & Budaya</h2>
+                    <h3>Monumen Nasional (Monas)</h3>
+                    <p>Bangunan ikonik setinggi 132 meter untuk mengenang perjuangan rakyat Indonesia. Di bagian dasarnya terdapat Museum Sejarah Nasional yang menampilkan puluhan diorama sejarah bangsa.</p>
+                    <h3>Kawasan Kota Tua (Batavia Lama)</h3>
+                    <p>Pusat peninggalan kolonial Belanda dengan arsitektur abad ke-17. Menyimpan cagar budaya penting seperti Museum Fatahillah (Sejarah Jakarta), Museum Wayang, dan Museum Seni Rupa & Keramik.</p>
+                    <h3>Taman Mini Indonesia Indah (TMII)</h3>
+                    <p>Kawasan wisata rangkuman kebudayaan Nusantara yang menampilkan anjungan daerah dari seluruh provinsi, rumah adat, busana tradisional, hingga berbagai museum IPTEK terpadu.</p>
+                </div>
+
+                <div id="bab1-3" class="materi-panel">
+                    <h1>Bab 1: DKI Jakarta</h1>
+                    <h2>1.3 Lagu Daerah & Musik Tradisional</h2>
+                    <p>Suku Betawi memiliki kekayaan musik tradisional yang kental diiringi alat musik Gambang Kromong. Karakter lagunya bernada riang, jenaka, dan penuh pesan moral lewat pantun:</p>
+                    <ul>
+                        <li><strong>Kicir-Kicir:</strong> Lagu tradisional penghibur hati lara sekaligus penyampai nasihat kehidupan agar manusia rajin bekerja, berbuat baik, dan selalu bersyukur.</li>
+                        <li><strong>Jali-Jali:</strong> Lagu populer yang identik dengan jalinan pantun terikat. Biasanya dilantunkan pada upacara adat, pesta rakyat, maupun penyambutan tamu resmi.</li>
+                    </ul>
+                </div>
+
+                <div id="bab1-4" class="materi-panel">
+                    <h1>Bab 1: DKI Jakarta</h1>
+                    <h2>1.4 Materi Visual</h2>
+                    <div style="position: relative; width: 100%; height: 0; padding-top: 56.2500%; padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">
+                        <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;" src="https://www.canva.com/design/DAHI2BWG7y0/vhCJqmVYHFDlCNVcC8TXAA/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen"></iframe>
+                    </div>
+                    <a href="https://www.canva.com/design/DAHI2BWG7y0/vhCJqmVYHFDlCNVcC8TXAA/view?utm_content=DAHI2BWG7y0&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener" class="btn-lms">Buka di Canva - DKI Jakarta</a>
+                </div>
+
+                <div id="bab1-5" class="materi-panel">
+                    <h1>Bab 1: DKI Jakarta</h1>
+                    <h2>1.5 Video Pembelajaran</h2>
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/RX3h3qzobkU" allowfullscreen></iframe>
+                    </div>
+                </div>
+
+                <div id="bab1-6" class="materi-panel">
+                    <h1>Bab 1: DKI Jakarta</h1>
+                    <h2>1.6 Quiz Pembelajaran</h2>
+                    <p>Klik tombol di bawah ini untuk menguji pemahaman Anda mengenai Bab 1:</p>
+                    <a href="https://forms.gle/zQ5eKc1uBsGWBXy68" target="_blank" class="btn-lms">Buka Quiz Google Form</a>
+                </div>
+
+                <div id="bab2-1" class="materi-panel">
+                    <h1>Bab 2: Banten</h1>
+                    <h2>2.1 Letak Geografis</h2>
+                    <div class="summary-box">
+                        <strong>Ringkasan bab 2:</strong> Bab 2 membahas tentang keragaman di daerah provinsi banten materi tambahan canva ,quiz dan juga video pembelajaran
+                    </div>
+                    <h3>Koordinat Astronomis</h3>
+                    <p>Terletak pada koordinat 5° 7' - 7° 1' Lintang Selatan (LS) dan 105° 1' - 107° 2' Bujur Timur (BT).</p>
+                    <h3>Kondisi Fisik & Geologi</h3>
+                    <p>Menempati posisi geopolitik krusial di ujung barat Pulau Jawa sebagai poros koridor logistik nasional lintas Selat Sunda (penghubung Jawa-Sumatera). Topografinya terbagi dua: bagian utara didominasi dataran rendah pantai yang subur, sedangkan bagian selatan merupakan perbukitan tajam (Pegunungan Kendeng). Pesisir baratnya masuk dalam jalur Ring of Fire karena dekat dengan Gunung Anak Krakatau.</p>
+                    <h3>Batas Wilayah Eksplisit</h3>
+                    <ul>
+                        <li><strong>Utara:</strong> Perairan dangkal Laut Jawa</li>
+                        <li><strong>Timur:</strong> DKI Jakarta dan Kabupaten Bogor (Provinsi Jawa Barat)</li>
+                        <li><strong>Selatan:</strong> Samudra Hindia</li>
+                        <li><strong>Barat:</strong> Selat Sunda</li>
+                    </ul>
+                </div>
+
+                <div id="bab2-2" class="materi-panel">
+                    <h1>Bab 2: Banten</h1>
+                    <h2>2.2 Wisata Daerah & Edukasi</h2>
+                    <h3>Kawasan Wisata Religi Banten Lama</h3>
+                    <p>Episentrum penyebaran Islam di Jawa Barat abad ke-16. Terdapat Masjid Agung Banten dengan atap tumpang lima hasil akulturasi arsitektur Tionghoa (karya Tjek Ban Tjut) serta menara setinggi 24 meter. Di sekitarnya terdapat puing Keraton Surosowan dan Keraton Kaibon.</p>
+                    <h3>Suku Adat Baduy (Urang Kanekes)</h3>
+                    <p>Komunitas adat seluas 5.000 hektare di Lebak. Terbagi menjadi Baduy Dalam (berpakaian putih, memegang teguh hukum adat Pikukuh, menolak teknologi/listrik/alas kaki) dan Baduy Luar (berpakaian hitam, lebih terbuka). Mengedukasi tentang pelestarian hutan dan sistem ketahanan pangan (leuit).</p>
+                    <h3>Taman Nasional Ujung Kulon (TNUK)</h3>
+                    <p>Situs Warisan Dunia UNESCO yang merupakan ekosistem hutan hujan dataran rendah terbesar tersisa di Jawa. Menjadi benteng terakhir konservasi Badak Jawa Bercula Satu (Rhinoceros sondaicus).</p>
+                </div>
+
+                <div id="bab2-3" class="materi-panel">
+                    <h1>Bab 2: Banten</h1>
+                    <h2>2.3 Lagu Daerah & Musik Spiritual</h2>
+                    <h3>Dayung Sampan</h3>
+                    <p>Terinspirasi dari aktivitas nelayan Teluk Banten dan pesisir Tangerang. Melodinya mendayu dengan ritme konsisten, menceritakan ketegaran, kesabaran, dan etos kerja keras kaum nelayan.</p>
+                    <h3>Jereh Bu Guru</h3>
+                    <p>Lagu dolanan anak berbahasa Jawa Serang (Jaseng). Isinya berupa petuah pentingnya mendengarkan nasihat guru, rajin membaca, belajar ilmu agama, dan tidak membolos.</p>
+                </div>
+
+                <div id="bab2-4" class="materi-panel">
+                    <h1>Bab 2: Banten</h1>
+                    <h2>2.4 Materi Visual</h2>
+                    <div style="position: relative; width: 100%; height: 0; padding-top: 56.2500%; padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">
+                        <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;" src="https://www.canva.com/design/DAHI2Mh3EPI/PZiqnwoDu5NS29FineICGQ/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen"></iframe>
+                    </div>
+                    <a href="https://www.canva.com/design/DAHI2Mh3EPI/PZiqnwoDu5NS29FineICGQ/view" target="_blank" class="btn-lms">Buka di Canva - Provinsi Banten</a>
+                </div>
+
+                <div id="bab2-5" class="materi-panel">
+                    <h1>Bab 2: Banten</h1>
+                    <h2>2.5 Video Pembelajaran</h2>
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/fvp2Ak6nA48" allowfullscreen></iframe>
+                    </div>
+                </div>
+
+                <div id="bab2-6" class="materi-panel">
+                    <h1>Bab 2: Banten</h1>
+                    <h2>2.6 Quiz Pembelajaran</h2>
+                    <a href="https://forms.gle/V3PL5SJByLaVT4yN9" target="_blank" class="btn-lms">Buka Quiz Google Form</a>
+                </div>
+
+                <div id="bab3-1" class="materi-panel">
+                    <h1>Bab 3: Daerah Istimewa Yogyakarta</h1>
+                    <h2>3.1 Letak Geografis</h2>
+                    <div class="summary-box">
+                        <strong>Ringkasan bab 3:</strong> Bab 3 : Bab 1 membahas tentang keragaman di DIY Yogyakarta materi tambahan canva ,quiz dan juga video pembelajaran
+                    </div>
+                    <h3>Koordinat Astronomis</h3>
+                    <p>Terletak pada koordinat 7° 33' - 8° 12' Lintang Selatan (LS) dan 110° 00' - 110° 50' Bujur Timur (BT).</p>
+                    <h3>Kondisi Fisik & Sumbu Filosofis</h3>
+                    <p>Memiliki struktur keistimewaan tata negara dan geografi unik berupa "Sumbu Filosofis Garis Imajiner Tegak Lurus" yang membentang dari Gunung Merapi, Tugu Pal Putih, Keraton Yogyakarta, Panggung Krapyak, hingga Laut Selatan. Wilayah utara subur karena material vulkanik, wilayah tengah berupa Cekungan Yogyakarta, dan wilayah selatan berupa perbukitan kapur kering (Pegunungan Karst Sewu, Gunungkidul).</p>
+                    <h3>Batas Wilayah Eksplisit</h3>
+                    <ul>
+                        <li><strong>Utara, Timur, Barat:</strong> Berbatasan langsung dengan Provinsi Jawa Tengah</li>
+                        <li><strong>Selatan:</strong> Garis pantai curam Samudra Hindia</li>
+                    </ul>
+                </div>
+
+                <div id="bab3-2" class="materi-panel">
+                    <h1>Bab 3: Daerah Istimewa Yogyakarta</h1>
+                    <h2>3.2 Wisata Daerah & Edukasi</h2>
+                    <h3>Keraton Ngayogyakarta Hadiningrat</h3>
+                    <p>Didirikan oleh Sultan Hamengkubuwono I pada tahun 1755 pasca Perjanjian Giyanti. Menjadi pusat peradaban Jawa Islam yang hidup dengan arsitektur Joglo berfilosofi tinggi (seperti Bangsal Kencono), museum manuskrip, dan koleksi kereta kencana (Kereta Kanjeng Nyai Jimat).</p>
+                    <h3>Candi Prambanan (Rara Jonggrang)</h3>
+                    <p>Mahakarya arsitektur Hindu terbesar di Indonesia yang dibangun abad ke-9 oleh Raja Rakai Pikatan (Dinasti Sanjaya). Candi setinggi 47 meter ini memiliki tiga candi utama (Siwa, Wisnu, Brahma) dengan relief epos Ramayana.</p>
+                    <h3>Taman Pintar Yogyakarta</h3>
+                    <p>Wahana rekreasi edukasi sains di pusat kota yang memadukan laboratorium interaktif dengan kebudayaan. Menyediakan Zona Pengolahan Sampah, Simulator Gempa Bumi, Gedung Oval-Kotak, dan Planetarium digital.</p>
+                </div>
+
+                <div id="bab3-3" class="materi-panel">
+                    <h1>Bab 3: Daerah Istimewa Yogyakarta</h1>
+                    <h2>3.3 Lagu Daerah & Sastra Gamelan Jawa</h2>
+                    <h3>Suwe Ora Jamu</h3>
+                    <p>Lagu dolanan anak pendek yang legendaris. Menggunakan perumpamaan jamu tradisional untuk mengajarkan bahwa perpisahan lama tidak boleh memutus tali silaturahmi, dan pertemuan kembali harus disambut suka cita.</p>
+                    <h3>Caping Gunung</h3>
+                    <p>Lagu langgam Jawa ciptaan maestro Gesang. Sarat muatan sosial-politik masa lalu, menceritakan pengorbanan petani penyokong logistik perjuangan serta kerinduan orang tua terhadap anaknya yang merantau ke kota namun lupa asal-usulnya.</p>
+                </div>
+
+                <div id="bab3-4" class="materi-panel">
+                    <h1>Bab 3: Daerah Istimewa Yogyakarta</h1>
+                    <h2>3.4 Materi Visual</h2>
+                    <div style="position: relative; width: 100%; height: 0; padding-top: 56.2500%; padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">
+                        <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;" src="https://www.canva.com/design/DAHEZ3tjSz4/fsG3OqTwUbX2Xy9we1WcYw/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen"></iframe>
+                    </div>
+                    <a href="https://www.canva.com/design/DAHEZ3tjSz4/fsG3OqTwUbX2Xy9we1WcYw/view" target="_blank" class="btn-lms">Buka di Canva - Pendidikan Iklim Presentation</a>
+                </div>
+
+                <div id="bab3-5" class="materi-panel">
+                    <h1>Bab 3: Daerah Istimewa Yogyakarta</h1>
+                    <h2>3.5 Video Pembelajaran</h2>
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/lCROkc2nYvM" allowfullscreen></iframe>
+                    </div>
+                </div>
+
+                <div id="bab3-6" class="materi-panel">
+                    <h1>Bab 3: Daerah Istimewa Yogyakarta</h1>
+                    <h2>3.6 Quiz Pembelajaran</h2>
+                    <a href="https://forms.gle/yvpMbUJk6uSsU5xz6" target="_blank" class="btn-lms">Buka Quiz Google Form</a>
+                </div>
+
+                <div id="bab4-1" class="materi-panel">
+                    <h1>Bab 4: Jawa Tengah</h1>
+                    <h2>4.1 Letak Geografis</h2>
+                    <div class="summary-box">
+                        <strong>Ringkasan bab 4:</strong> Bab 4 : Bab 4 membahas tentang keragaman di Jawa tengah materi tambahan canva ,quiz dan juga video pembelajaran
+                    </div>
+                    <h3>Koordinat Astronomis</h3>
+                    <p>Terletak pada koordinat 6° 30' - 8° 30' Lintang Selatan (LS) and 108° 30' - 111° 30' Bujur Timur (BT) dengan luas kurang lebih 32.800 km².</p>
+                    <h3>Kondisi Fisik & Gunung Berapi</h3>
+                    <p>Jalur pantai utara (Pantura) berupa dataran rendah aluvial padat penduduk. Bagian tengahnya merupakan "tulang punggung vulkanis" Pulau Jawa yang dihiasi deretan gunung berapi strato aktif (Gunung Slamet [3.428 mdpl], Sindoro, Sumbing, Merbabu, dan Merapi), menghasilkan tanah vulkanis subur tipe Andosol dan Regosol.</p>
+                    <h3>Batas Wilayah Eksplisit</h3>
+                    <ul>
+                        <li><strong>Utara:</strong> Laut Jawa (jalur pelayaran internasional)</li>
+                        <li><strong>Timur:</strong> Provinsi Jawa Timur</li>
+                        <li><strong>Selatan:</strong> Samudra Hindia dan DI Yogyakarta</li>
+                        <li><strong>Barat:</strong> Provinsi Jawa Barat</li>
+                    </ul>
+                </div>
+
+                <div id="bab4-2" class="materi-panel">
+                    <h1>Bab 4: Jawa Tengah</h1>
+                    <h2>4.2 Wisata Daerah & Edukasi</h2>
+                    <h3>Candi Borobudur</h3>
+                    <p>Monumen Buddhis Mahayana terbesar di dunia peninggalan Dinasti Syailendra (abad ke-8). Berbentuk piramida berundak menggunakan teknik kancing batu (interlocking), terdiri dari 2.672 panel relief dan 504 arca Buddha yang menggambarkan tingkatan spiritual: Kamadhatu, Rupadhatu, dan Arupadhatu.</p>
+                    <h3>Dataran Tinggi Dieng (Dieng Plateau)</h3>
+                    <p>Kaldera gunung purba di ketinggian 2.000 mdpl (Banjarnegara-Wonosobo). Menyimpan keunikan geologi seperti Kawah Sikidang, Telaga Warna, kompleks candi Hindu tertua (Candi Arjuna), serta keunikan antropologi fenomena anak rambut gimbal.</p>
+                    <h3>Situs Manusia Purba Sangiran</h3>
+                    <p>Situs arkeologi seluas 56 km² di Sragen dan Karanganyar yang menyimpan 50% populasi temuan fosil purba dunia (seperti Pithecanthropus erectus, gajah purba Mastodon, dan alat batu rijang purba).</p>
+                </div>
+
+                <div id="bab4-3" class="materi-panel">
+                    <h1>Bab 4: Jawa Tengah</h1>
+                    <h2>4.3 Lagu Daerah & Satir Edukatif</h2>
+                    <h3>Gundul-Gundul Pacul</h3>
+                    <p>Lagu dolanan ciptaan Sunan Kalijaga yang kaya simbolisme. Gundul (kepala tanpa mahkota) dan Pacul (cangkul/lambang rakyat) menjadi kritik sekaligus amanat bagi penguasa agar tidak sombong (gembelengan), karena pemimpin yang tidak amanah akan menghancurkan wadah kesejahteraan rakyat (wakul ngglimpang segane dadi sak latar).</p>
+                    <h3>Gambang Suling</h3>
+                    <p>Ciptaan dalang legendaris Ki Nartosabdo sebagai bentuk apresiasi estetika instrumen suling bambu dalam gamelan Jawa yang mampu menghadirkan ketenteraman batin.</p>
+                </div>
+
+                <div id="bab4-4" class="materi-panel">
+                    <h1>Bab 4: Jawa Tengah</h1>
+                    <h2>4.4 Materi Visual</h2>
+                    <div style="position: relative; width: 100%; height: 0; padding-top: 56.2500%; padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">
+                        <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;" src="https://www.canva.com/design/DAHF97F4sUQ/vk-M8Jq8db8BPSC6CfBGUQ/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen"></iframe>
+                    </div>
+                    <a href="https://www.canva.com/design/DAHF97F4sUQ/vk-M8Jq8db8BPSC6CfBGUQ/view" target="_blank" class="btn-lms">Buka di Canva - Jawa Tengah Research Presentation</a>
+                </div>
+
+                <div id="bab4-5" class="materi-panel">
+                    <h1>Bab 4: Jawa Tengah</h1>
+                    <h2>4.5 Video Pembelajaran</h2>
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/-AbRLLWniWU" allowfullscreen></iframe>
+                    </div>
+                </div>
+
+                <div id="bab4-6" class="materi-panel">
+                    <h1>Bab 4: Jawa Tengah</h1>
+                    <h2>4.6 Quiz Pembelajaran</h2>
+                    <a href="https://forms.gle/pgo92Ds4T8ttVxyc8" target="_blank" class="btn-lms">Buka Quiz Google Form</a>
+                </div>
+
+                <div id="bab5-1" class="materi-panel">
+                    <h1>Bab 5: Jawa Barat</h1>
+                    <h2>5.1 Letak Geografis</h2>
+                    <div class="summary-box">
+                        <strong>Ringkasan bab 5:</strong> Bab 5 : Bab 5 membahas tentang keragaman di jawa barat materi tambahan canva ,quiz dan juga video pembelajaran
+                    </div>
+                    <h3>Koordinat Astronomis</h3>
+                    <p>Terletak pada koordinat 5° 50' - 8° 00' Lintang Selatan (LS) dan 106° 22' - 108° 50' Bujur Timur (BT).</p>
+                    <h3>Kondisi Fisik & Cekungan Bandung</h3>
+                    <p>Fisiografinya didominasi pegunungan lipatan muda vulkanis aktif (Tanah Pasundan). Di bagian tengah terdapat Cekungan Bandung (bekas danau purba raksasa) yang dikepung Gunung Tangkuban Parahu, Burangrang, dan Sunda Purba. Sistem hidrologinya sangat melimpah, mengaliri sungai besar penopang waduk listrik nasional seperti Sungai Citarum dan Cimanuk.</p>
+                    <h3>Batas Wilayah Eksplisit</h3>
+                    <ul>
+                        <li><strong>Utara:</strong> Laut Jawa dan Teluk Jakarta</li>
+                        <li><strong>Timur:</strong> Kabupaten Cilacap dan Kabupaten Brebes (Provinsi Jawa Tengah)</li>
+                        <li><strong>Selatan:</strong> Samudra Hindia (perairan dalam)</li>
+                        <li><strong>Barat:</strong> Kabupaten Serang dan Kabupaten Lebak (Provinsi Banten)</li>
+                    </ul>
+                </div>
+
+                <div id="bab5-2" class="materi-panel">
+                    <h1>Bab 5: Jawa Barat</h1>
+                    <h2>5.2 Wisata Edukasi, Konservasi Budaya & Sains</h2>
+                    <h3>Saung Angklung Udjo (SAU)</h3>
+                    <p>Laboratorium pelestarian budaya Sunda terlengkap di Bandung yang didirikan oleh Udjo Ngalagena (1966). Edukasi berfokus pada Angklung (Warisan Budaya Takbenda UNESCO), fisika getaran bunyi, serta pembuatan angklung dari bambu hitam (awi wulung).</p>
+                    <h3>Museum Geologi Bandung</h3>
+                    <p>Gedung berarsitektur Art Deco (1929) yang menyimpan ratusan ribu koleksi materi geologi, maket lempeng tektonik, meteorit, serta fosil paleontologi monumental seperti gajah purba Blora dan replika T-Rex.</p>
+                    <h3>Kawah Putih Ciwidey</h3>
+                    <p>Kawah belerang di puncak Gunung Patuha (>2.400 mdpl). Air danau kawahnya dapat berubah warna berdasarkan kadar belerang, suhu, dan cuaca. Menjadi lokasi studi aktivitas pasca-vulkanik dan adaptasi vegetasi khas dataran tinggi (seperti tanaman Cantigi).</p>
+                </div>
+
+                <div id="bab5-3" class="materi-panel">
+                    <h1>Bab 5: Jawa Barat</h1>
+                    <h2>5.3 Lagu Daerah & Nada Ekspresif Pasundan</h2>
+                    <h3>Manuk Dadali</h3>
+                    <p>Musik mars patriotik ciptaan Sambas Mangundikarta. Menggunakan perumpamaan burung Garuda (Manuk Dadali) yang gagah, berani, dan bersatu tanpa keiriandengki demi menanamkan jiwa nasionalisme serta Bhinneka Tunggal Ika.</p>
+                    <h3>Bubuy Bulan</h3>
+                    <p>Lagu bertangga nada pentatonik (Pelog/Salendro) yang kaya akan metafora sastra alam tradisional (Sisindiran). Menggambarkan perasaan rindu mendalam lewat bayangan bulan purnama yang tenggelam di air danau (situ).</p>
+                </div>
+
+                <div id="bab5-4" class="materi-panel">
+                    <h1>Bab 5: Jawa Barat</h1>
+                    <h2>5.4 Materi Visual</h2>
+                    <div style="position: relative; width: 100%; height: 0; padding-top: 56.2500%; padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">
+                        <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;" src="https://www.canva.com/design/DAHI2Wwhs74/do5GTlZsvpVCGMyZQG-l8Q/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen"></iframe>
+                    </div>
+                    <a href="https://www.canva.com/design/DAHI2Wwhs74/do5GTlZsvpVCGMyZQG-l8Q/view" target="_blank" class="btn-lms">Buka di Canva - Provinsi Jawa Barat</a>
+                </div>
+
+                <div id="bab5-5" class="materi-panel">
+                    <h1>Bab 5: Jawa Barat</h1>
+                    <h2>5.5 Video Pembelajaran</h2>
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/a4oARp-lPVw" allowfullscreen></iframe>
+                    </div>
+                </div>
+
+                <div id="bab5-6" class="materi-panel">
+                    <h1>Bab 5: Jawa Barat</h1>
+                    <h2>5.6 Quiz Pembelajaran</h2>
+                    <a href="https://forms.gle/beRgFq1tpckKdrSa7" target="_blank" class="btn-lms">Buka Quiz Google Form</a>
+                </div>
+
+                <div id="bab6-1" class="materi-panel">
+                    <h1>Bab 6: Jawa Timur</h1>
+                    <h2>6.1 Letak Geografis</h2>
+                    <div class="summary-box">
+                        <strong>Ringkasan bab 6:</strong> Bab 6 : Bab 6 membahas tentang keragaman di jawa timur materi tambahan canva ,quiz dan juga video pembelajaran
+                    </div>
+                    <h3>Koordinat Astronomis</h3>
+                    <p>Terletak pada koordinat 7° 12' - 8° 48' Lintang Selatan (LS) dan 111° 00' - 114° 04'  Bujur Timur (BT). Memiliki wilayah daratan terluas di antara enam provinsi di Pulau Jawa.</p>
+                    <h3>Kondisi Fisik & Kepulauan</h3>
+                    <p>Mencakup Pulau Madura (dihubungkan oleh Jembatan Suramadu), Pulau Bawean, Kangean, dan Sapudi. Bagian tengah hingga timur dikuasai kompleks vulkanis spektakuler: Kawasan Pegunungan Tengger, Gunung Argopuro, Raung, dan Gunung Semeru (atap Pulau Jawa, 3.676 mdpl). Sektor hidrologi ditopang hilir Sungai Bengawan Solo dan Sungai Brantas.</p>
+                    <h3>Batas Wilayah Eksplisit</h3>
+                    <ul>
+                        <li><strong>Utara:</strong> Laut Jawa</li>
+                        <li><strong>Timur:</strong> Selat Bali (Provinsi Bali)</li>
+                        <li><strong>Selatan:</strong> Samudra Hindia (palung laut dalam)</li>
+                        <li><strong>Barat:</strong> Provinsi Jawa Tengah</li>
+                    </ul>
+                </div>
+
+                <div id="bab6-2" class="materi-panel">
+                    <h1>Bab 6: Jawa Timur</h1>
+                    <h2>6.2 Wisata Edukasi, Geologi & Jejak Imperium</h2>
+                    <h3>Taman Nasional Bromo Tengger Semeru (TNBTS)</h3>
+                    <p>Satu-satunya kawasan konservasi dengan Lautan Pasir (Kaldera Tengger) seluas 5.250 hektare di ketinggian 2.100 mdpl. Edukasi meliputi pembentukan kaldera ganda serta antropologi Suku Tengger (pelestarian ritual Yadnya Kasada).</p>
+                    <h3>Situs Arkeologi Trowulan</h3>
+                    <p>Situs permukiman kota kuno peninggalan Hindu-Buddha dari masa Kerajaan Majapahit (abad ke-13 s.d 15). Meliputi Gapura Wringin Lawang, Candi Tikus (petirtaan sistem hidrolik), Candi Bajang Ratu, dan Museum Majapahit.</p>
+                    <h3>Museum Angkut</h3>
+                    <p>Museum transportasi modern seluas 3,8 hektare di Kota Batu yang mengoleksi lebih dari 300 kendaraan tradisional hingga modern dari berbagai belahan dunia yang ditata secara tematik.</p>
+                </div>
+
+                <div id="bab6-3" class="materi-panel">
+                    <h1>Bab 6: Jawa Timur</h1>
+                    <h2>6.3 Lagu Daerah & Karakter Arekan/Madura</h2>
+                    <h3>Rek Ayo Rek</h3>
+                    <p>Menggunakan bahasa Jawa dialek Suroboyoan dengan ritme cepat dan dinamis. Merefleksikan karakter sosial masyarakat Arekan yang jujur, lugas, egaliter, terbuka, serta menjunjung solidaritas tanpa memandang kasta.</p>
+                    <h3>Gai Bintang</h3>
+                    <p>Lagu tradisional Madura beritme ketukan kendang khas dikemas dalam lagu dolanan anak. Memiliki filosofi mendalam bahwa cita-cita tinggi (bintang) memerlukan ikhtiar kerja keras, konsistensi, keberanian, dan doa.</p>
+                </div>
+
+                <div id="bab6-4" class="materi-panel">
+                    <h1>Bab 6: Jawa Timur</h1>
+                    <h2>6.4 Materi Visual</h2>
+                    <div style="position: relative; width: 100%; height: 0; padding-top: 56.2500%; padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">
+                        <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;" src="https://www.canva.com/design/DAHJdDgoUo4/YX1vFLTBuKiFeqKQS4zcGw/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen"></iframe>
+                    </div>
+                    <a href="https://www.canva.com/design/DAHJdDgoUo4/YX1vFLTBuKiFeqKQS4zcGw/view?utm_content=DAHJdDgoUo4&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener" class="btn-lms">Buka di Canva - Sejarah Singkat Jawa Timur</a>
+                </div>
+
+                <div id="bab6-5" class="materi-panel">
+                    <h1>Bab 6: Jawa Timur</h1>
+                    <h2>6.5 Video Pembelajaran</h2>
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/cYSrmTZjJfg" allowfullscreen></iframe>
+                    </div>
+                </div>
+
+                <div id="bab6-6" class="materi-panel">
+                    <h1>Bab 6: Jawa Timur</h1>
+                    <h2>6.6 Quiz Pembelajaran</h2>
+                    <a href="https://forms.gle/HfFyj6d7Hz43r1PNA" target="_blank" class="btn-lms">Buka Quiz Google Form</a>
+                </div>
+
+                <div id="lms-game" class="materi-panel">
+                    <h1>🕹️ Game Interaktif</h1>
+                    <h2>Evaluasi Kreatif Pembelajaran</h2>
+                    <p>Mainkan gim edukasi interaktif untuk mengulang dan memantapkan wawasan kebudayaan yang telah dipelajari:</p>
+                    <a href="https://gemini.google.com/share/4a4bf5834a20" target="_blank" class="btn-lms" style="background-color: var(--accent-color);">Buka Ruang Game Sekarang</a>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 1. Fungsi Mengatur Akordeon Bab (Buka-Tutup Menu Subbab)
+        function toggleAccordion(button) {
+            const currentItem = button.parentElement;
+            
+            // Opsional: Tutup bab lain yang tidak dipilih untuk kerapian
+            document.querySelectorAll('.accordion-item').forEach(item => {
+                if(item !== currentItem) {
+                    item.classList.remove('open');
+                }
+            });
+
+            currentItem.classList.toggle('open');
+        }
+
+        // 2. Fungsi Berpindah Konten Panel Materi (Tab Routing Dinamis)
+        function switchPanel(panelId, element) {
+            // Sembunyikan semua panel materi
+            document.querySelectorAll('.materi-panel').forEach(panel => {
+                panel.classList.remove('active-panel');
+            });
+
+            // Hilangkan efek aktif (highlight) dari menu lama
+            document.querySelectorAll('.subbab-item, .game-menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Tampilkan panel baru yang dipilih siswa
+            const targetPanel = document.getElementById(panelId);
+            if(targetPanel) {
+                targetPanel.classList.add('active-panel');
+            }
+
+            // Tambahkan efek highlight aktif ke item menu yang diklik
+            element.classList.add('active');
+
+            // Khusus Tampilan Mobile: Otomatis sembunyikan sidebar setelah klik modul
+            if (window.innerWidth <= 768) {
+                document.getElementById('lmsSidebar').classList.remove('show-mobile');
+            }
+
+            // Kembalikan scroll konten ke bagian paling atas
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 3. Fungsi Buka-Tutup Sidebar Khusus Layar Mobile (Hamburger Menu)
+        function toggleSidebar() {
+            const sidebar = document.getElementById('lmsSidebar');
+            sidebar.classList.toggle('show-mobile');
+        }
+    </script>
+</body>
+</html>
